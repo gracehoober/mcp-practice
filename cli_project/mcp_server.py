@@ -1,7 +1,7 @@
-from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
-mcp = FastMCP("DocumentMCP", log_level="ERROR")
+mcp = FastMCP("DocumentMCP")
 
 
 docs = {
@@ -43,7 +43,7 @@ def edit_doc(
 
     edited_doc = docs[doc_id].replace(exisiting_substring, new_substring)
     docs[doc_id] = edited_doc
-    return edit_doc
+    return edited_doc
 
 
     # TODO: Write a resource to return all doc id's
