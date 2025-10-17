@@ -1,4 +1,5 @@
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
+from pydantic import Field
 
 mcp = FastMCP("DocumentMCP", log_level="ERROR")
 
@@ -12,13 +13,42 @@ docs = {
     "spec.txt": "These specifications define the technical requirements for the equipment.",
 }
 
-# TODO: Write a tool to read a doc
-# TODO: Write a tool to edit a doc
-# TODO: Write a resource to return all doc id's
-# TODO: Write a resource to return the contents of a particular doc
-# TODO: Write a prompt to rewrite a doc in markdown format
-# TODO: Write a prompt to summarize a doc
+
+@mcp.tool(
+    name="read_doc_contents",
+    description="Read the contents of the provided document and return the contents as a string"
+)
+def read_doc(
+    doc_id: str = Field(description="Id of the document to read.")
+) -> str:
+    if doc_id not in docs:
+        raise ValueError(f"Document with id {doc_id} not found.")
+
+    return docs[doc_id]
 
 
+@mcp.tool(
+    name="edit_doc_contents",
+    description="Edits a document by replacing an exisiting substring with a new substring."
+)
+def edit_doc(
+    doc_id: str = Field(description="Id of the document to edit."),
+    exisiting_substring: str = Field(
+        description="A substring in the document to replace. Must match exactly."),
+    new_substring: str = Field(
+        description="A substring to replace the existing_substring with.")
+):
+    if doc_id not in docs:
+        raise ValueError(f"Document with id {doc_id} not found.")
+
+    edited_doc = docs[doc_id].replace(exisiting_substring, new_substring)
+    docs[doc_id] = edited_doc
+    return edit_doc
+
+
+    # TODO: Write a resource to return all doc id's
+    # TODO: Write a resource to return the contents of a particular doc
+    # TODO: Write a prompt to rewrite a doc in markdown format
+    # TODO: Write a prompt to summarize a doc
 if __name__ == "__main__":
     mcp.run(transport="stdio")
