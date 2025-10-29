@@ -1,23 +1,25 @@
 import json
-from typing import Optional, Literal, List
-from mcp.types import CallToolResult, Tool, TextContent
+from typing import Any, Literal, cast
+
+from anthropic.types import Message, ToolParam, ToolResultBlockParam
+from mcp.types import CallToolResult, TextContent, Tool
+
 from mcp_client import MCPClient
-from anthropic.types import Message, ToolResultBlockParam
 
 
 class ToolManager:
     @classmethod
-    async def get_all_tools(cls, clients: dict[str, MCPClient]) -> list[Tool]:
+    async def get_all_tools(cls, clients: dict[str, MCPClient]) -> list[ToolParam]:
         """Gets all tools from the provided clients."""
-        tools = []
+        tools: list[ToolParam] = []
         for client in clients.values():
             tool_models = await client.list_tools()
             tools += [
-                {
+                cast(ToolParam, {
                     "name": t.name,
                     "description": t.description,
                     "input_schema": t.inputSchema,
-                }
+                })
                 for t in tool_models
             ]
         return tools
@@ -25,7 +27,7 @@ class ToolManager:
     @classmethod
     async def _find_client_with_tool(
         cls, clients: list[MCPClient], tool_name: str
-    ) -> Optional[MCPClient]:
+    ) -> MCPClient | None:
         """Finds the first client that has the specified tool."""
         for client in clients:
             tools = await client.list_tools()
@@ -52,7 +54,7 @@ class ToolManager:
     @classmethod
     async def execute_tool_requests(
         cls, clients: dict[str, MCPClient], message: Message
-    ) -> List[ToolResultBlockParam]:
+    ) -> list[ToolResultBlockParam]:
         """Executes a list of tool requests against the provided clients."""
         tool_requests = [
             block for block in message.content if block.type == "tool_use"
@@ -61,7 +63,7 @@ class ToolManager:
         for tool_request in tool_requests:
             tool_use_id = tool_request.id
             tool_name = tool_request.name
-            tool_input = tool_request.input
+            tool_input = cast(dict[Any, Any], tool_request.input)
 
             client = await cls._find_client_with_tool(
                 list(clients.values()), tool_name

@@ -109,6 +109,57 @@ To fully implement the MCP features:
 1. Complete the TODOs in `mcp_server.py`
 2. Implement the missing functionality in `mcp_client.py`
 
-### Linting and Typing Check
+### Linting and Type Checking
 
-There are no lint or type checks implemented.
+This project uses the following tools for code quality:
+
+- **ruff**: Fast Python linter and code formatter
+- **black**: Code formatter
+- **mypy**: Static type checker
+- **pytest**: Testing framework
+
+#### Install Development Dependencies
+
+```bash
+uv sync --group dev
+```
+
+#### Running Checks
+
+Use the following commands to run code quality checks:
+
+```bash
+# Run linter
+uv run ruff check .
+
+# Auto-fix linting issues
+uv run ruff check --fix .
+
+# Format code with black
+uv run black .
+
+# Check formatting without making changes
+uv run black --check .
+
+# Run type checker
+uv run mypy .
+
+# Run tests
+uv run pytest
+```
+
+#### Pre-commit Hooks (Optional)
+
+To automatically run checks before each commit:
+
+1. Install pre-commit:
+```bash
+uv pip install pre-commit
+```
+
+2. Install the git hooks:
+```bash
+pre-commit install
+```
+
+Now the checks will run automatically on each commit.

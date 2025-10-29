@@ -1,7 +1,8 @@
-from core.claude import Claude
-from mcp_client import MCPClient
-from core.tools import ToolManager
 from anthropic.types import MessageParam
+
+from core.claude import Claude
+from core.tools import ToolManager
+from mcp_client import MCPClient
 
 
 class Chat:
@@ -10,7 +11,7 @@ class Chat:
         self.clients: dict[str, MCPClient] = clients
         self.messages: list[MessageParam] = []
 
-    async def _process_query(self, query: str):
+    async def _process_query(self, query: str) -> None:
         self.messages.append({"role": "user", "content": query})
 
     async def run(

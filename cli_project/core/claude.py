@@ -1,5 +1,7 @@
+from typing import Any, cast
+
 from anthropic import Anthropic
-from anthropic.types import Message
+from anthropic.types import Message, MessageParam, ToolParam
 
 
 class Claude:
@@ -7,39 +9,42 @@ class Claude:
         self.client = Anthropic()
         self.model = model
 
-    def add_user_message(self, messages: list, message):
+    def add_user_message(self, messages: list[MessageParam], message: Message | str | list[Any]) -> None:
         user_message = {
             "role": "user",
             "content": message.content
             if isinstance(message, Message)
             else message,
         }
-        messages.append(user_message)
+        messages.append(cast(MessageParam, user_message))
 
-    def add_assistant_message(self, messages: list, message):
+    def add_assistant_message(self, messages: list[MessageParam], message: Message | str) -> None:
         assistant_message = {
             "role": "assistant",
             "content": message.content
             if isinstance(message, Message)
             else message,
         }
-        messages.append(assistant_message)
+        messages.append(cast(MessageParam, assistant_message))
 
-    def text_from_message(self, message: Message):
+    def text_from_message(self, message: Message) -> str:
         return "\n".join(
             [block.text for block in message.content if block.type == "text"]
         )
 
     def chat(
         self,
-        messages,
-        system=None,
-        temperature=1.0,
-        stop_sequences=[],
-        tools=None,
-        thinking=False,
-        thinking_budget=1024,
+        messages: list[MessageParam],
+        system: str | None = None,
+        temperature: float = 1.0,
+        stop_sequences: list[str] | None = None,
+        tools: list[ToolParam] | None = None,
+        thinking: bool = False,
+        thinking_budget: int = 1024,
     ) -> Message:
+        if stop_sequences is None:
+            stop_sequences = []
+
         params = {
             "model": self.model,
             "max_tokens": 8000,
@@ -60,5 +65,5 @@ class Claude:
         if system:
             params["system"] = system
 
-        message = self.client.messages.create(**params)
+        message: Message = self.client.messages.create(**params)  # type: ignore[call-overload]
         return message

@@ -13,7 +13,10 @@ Requires-Dist: python-dotenv>=1.1.0
 
 # MCP Chat
 
-MCP Chat is a command-line interface application that enables interactive chat capabilities with AI models through the Anthropic API. The application supports document retrieval, command-based prompts, and extensible tool integrations via the MCP (Model Control Protocol) architecture.
+MCP Chat is a command-line interface application that enables interactive chat capabilities with AI models through the Anthropic API. The application supports document retrieval, command-based prompts, and extensible tool integrations via the MCP (Model Context Protocol) architecture.
+
+Chat from the cmd line:
+![](./media/cmd_line_example.png)
 
 ## Prerequisites
 
@@ -119,6 +122,60 @@ To fully implement the MCP features:
 1. Complete the TODOs in `mcp_server.py`
 2. Implement the missing functionality in `mcp_client.py`
 
-### Linting and Typing Check
+### Linting and Type Checking
 
-There are no lint or type checks implemented.
+This project uses the following tools for code quality:
+
+- **ruff**: Fast Python linter and code formatter
+- **black**: Code formatter
+- **mypy**: Static type checker
+- **pytest**: Testing framework
+
+#### Install Development Dependencies
+
+```bash
+uv pip install -e ".[dev]"
+```
+
+#### Running Checks
+
+Use the provided Makefile for easy access to common commands:
+
+```bash
+# Run linter
+make lint
+
+# Auto-fix linting issues
+make lint-fix
+
+# Format code with black
+make format
+
+# Check formatting without making changes
+make format-check
+
+# Run type checker
+make type-check
+
+# Run all checks (lint, format-check, type-check)
+make check
+
+# Run tests
+make test
+```
+
+#### Pre-commit Hooks (Optional)
+
+To automatically run checks before each commit:
+
+1. Install pre-commit:
+```bash
+uv pip install pre-commit
+```
+
+2. Install the git hooks:
+```bash
+pre-commit install
+```
+
+Now the checks will run automatically on each commit.

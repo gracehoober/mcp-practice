@@ -1,24 +1,25 @@
-from typing import List, Optional
+
+from mcp.types import Prompt
 from prompt_toolkit import PromptSession
+from prompt_toolkit.auto_suggest import AutoSuggest, Suggestion
+from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.document import Document
+from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.styles import Style
-from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.auto_suggest import AutoSuggest, Suggestion
-from prompt_toolkit.document import Document
-from prompt_toolkit.buffer import Buffer
 
 from core.cli_chat import CliChat
 
 
 class CommandAutoSuggest(AutoSuggest):
-    def __init__(self, prompts: List):
+    def __init__(self, prompts: list):
         self.prompts = prompts
         self.prompt_dict = {prompt.name: prompt for prompt in prompts}
 
     def get_suggestion(
-        self, buffer: Buffer, document: Document
-    ) -> Optional[Suggestion]:
+        self, _buffer: Buffer, document: Document
+    ) -> Suggestion | None:
         text = document.text
 
         if not text.startswith("/"):
@@ -42,14 +43,14 @@ class UnifiedCompleter(Completer):
         self.prompt_dict = {}
         self.resources = []
 
-    def update_prompts(self, prompts: List):
+    def update_prompts(self, prompts: list) -> None:
         self.prompts = prompts
         self.prompt_dict = {prompt.name: prompt for prompt in prompts}
 
-    def update_resources(self, resources: List):
+    def update_resources(self, resources: list) -> None:
         self.resources = resources
 
-    def get_completions(self, document, complete_event):
+    def get_completions(self, document, _complete_event):
         text = document.text
         text_before_cursor = document.text_before_cursor
 
@@ -113,8 +114,8 @@ class UnifiedCompleter(Completer):
 class CliApp:
     def __init__(self, agent: CliChat):
         self.agent = agent
-        self.resources = []
-        self.prompts = []
+        self.resources: list[str] = []
+        self.prompts: list[Prompt] = []
 
         self.completer = UnifiedCompleter()
 
@@ -160,7 +161,7 @@ class CliApp:
                         buffer.start_completion(select_first=False)
 
         self.history = InMemoryHistory()
-        self.session = PromptSession(
+        self.session: PromptSession[str] = PromptSession(
             completer=self.completer,
             history=self.history,
             key_bindings=self.kb,

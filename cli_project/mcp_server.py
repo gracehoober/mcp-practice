@@ -37,7 +37,7 @@ def edit_doc(
         description="A substring in the document to replace. Must match exactly."),
     new_substring: str = Field(
         description="A substring to replace the existing_substring with.")
-):
+) -> str:
     if doc_id not in docs:
         raise ValueError(f"Document with id {doc_id} not found.")
 
