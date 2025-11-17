@@ -2,7 +2,7 @@ import json
 from typing import Any, Literal, cast
 
 from anthropic.types import Message, ToolParam, ToolResultBlockParam
-from mcp.types import CallToolResult, TextContent, Tool
+from mcp.types import CallToolResult, TextContent
 
 from mcp_client import MCPClient
 
@@ -15,11 +15,14 @@ class ToolManager:
         for client in clients.values():
             tool_models = await client.list_tools()
             tools += [
-                cast(ToolParam, {
-                    "name": t.name,
-                    "description": t.description,
-                    "input_schema": t.inputSchema,
-                })
+                cast(
+                    ToolParam,
+                    {
+                        "name": t.name,
+                        "description": t.description,
+                        "input_schema": t.inputSchema,
+                    },
+                )
                 for t in tool_models
             ]
         return tools
@@ -56,18 +59,14 @@ class ToolManager:
         cls, clients: dict[str, MCPClient], message: Message
     ) -> list[ToolResultBlockParam]:
         """Executes a list of tool requests against the provided clients."""
-        tool_requests = [
-            block for block in message.content if block.type == "tool_use"
-        ]
+        tool_requests = [block for block in message.content if block.type == "tool_use"]
         tool_result_blocks: list[ToolResultBlockParam] = []
         for tool_request in tool_requests:
             tool_use_id = tool_request.id
             tool_name = tool_request.name
             tool_input = cast(dict[Any, Any], tool_request.input)
 
-            client = await cls._find_client_with_tool(
-                list(clients.values()), tool_name
-            )
+            client = await cls._find_client_with_tool(list(clients.values()), tool_name)
 
             if not client:
                 tool_result_part = cls._build_tool_result_part(
@@ -90,9 +89,7 @@ class ToolManager:
                 tool_result_part = cls._build_tool_result_part(
                     tool_use_id,
                     content_json,
-                    "error"
-                    if tool_output and tool_output.isError
-                    else "success",
+                    "error" if tool_output and tool_output.isError else "success",
                 )
             except Exception as e:
                 error_message = f"Error executing tool '{tool_name}': {e}"
@@ -100,9 +97,7 @@ class ToolManager:
                 tool_result_part = cls._build_tool_result_part(
                     tool_use_id,
                     json.dumps({"error": error_message}),
-                    "error"
-                    if tool_output and tool_output.isError
-                    else "success",
+                    "error" if tool_output and tool_output.isError else "success",
                 )
 
             tool_result_blocks.append(tool_result_part)

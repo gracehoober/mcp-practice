@@ -134,34 +134,31 @@ This project uses the following tools for code quality:
 #### Install Development Dependencies
 
 ```bash
-uv pip install -e ".[dev]"
+uv sync --group dev
 ```
 
 #### Running Checks
 
-Use the provided Makefile for easy access to common commands:
+Use the following commands to run code quality checks:
 
 ```bash
 # Run linter
-make lint
+uv run ruff check .
 
 # Auto-fix linting issues
-make lint-fix
+uv run ruff check --fix .
 
 # Format code with black
-make format
+uv run black .
 
 # Check formatting without making changes
-make format-check
+uv run black --check .
 
 # Run type checker
-make type-check
-
-# Run all checks (lint, format-check, type-check)
-make check
+uv run mypy .
 
 # Run tests
-make test
+uv run pytest
 ```
 
 #### Pre-commit Hooks (Optional)

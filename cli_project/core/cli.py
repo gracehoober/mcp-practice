@@ -1,4 +1,3 @@
-
 from mcp.types import Prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.auto_suggest import AutoSuggest, Suggestion
@@ -17,9 +16,7 @@ class CommandAutoSuggest(AutoSuggest):
         self.prompts = prompts
         self.prompt_dict = {prompt.name: prompt for prompt in prompts}
 
-    def get_suggestion(
-        self, _buffer: Buffer, document: Document
-    ) -> Suggestion | None:
+    def get_suggestion(self, _buffer: Buffer, document: Document) -> Suggestion | None:
         text = document.text
 
         if not text.startswith("/"):

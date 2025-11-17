@@ -1,8 +1,8 @@
 import asyncio
 import sys
 from contextlib import AsyncExitStack
-from typing import Any
 
+# from typing import Any
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
@@ -38,7 +38,8 @@ class MCPClient:
     def session(self) -> ClientSession:
         if self._session is None:
             raise ConnectionError(
-                "Client session not initialized or cache not populated. Call connect_to_server first."
+                "Client session not initialized or cache not populated. "
+                "Call connect_to_server first."
             )
         return self._session
 
@@ -46,7 +47,7 @@ class MCPClient:
         """Returns a list of MCP tools."""
 
         response = await self.session().list_tools()
-        return  response.tools
+        return response.tools
 
     async def call_tool(
         self, tool_name: str, tool_input: dict
@@ -55,17 +56,17 @@ class MCPClient:
 
         return await self.session().call_tool(tool_name, tool_input)
 
-    async def list_prompts(self) -> list[types.Prompt]:
-        # TODO: Return a list of prompts defined by the MCP server
-        return []
+    # async def list_prompts(self) -> list[types.Prompt]:
+    #     # TODO: Return a list of prompts defined by the MCP server
+    #     return []
 
-    async def get_prompt(self, prompt_name, args: dict[str, str]):
-        # TODO: Get a particular prompt defined by the MCP server
-        return []
+    # async def get_prompt(self, prompt_name, args: dict[str, str]):
+    #     # TODO: Get a particular prompt defined by the MCP server
+    #     return []
 
-    async def read_resource(self, uri: str) -> Any:
-        # TODO: Read a resource, parse the contents and return it
-        return []
+    # async def read_resource(self, uri: str) -> Any:
+    #     # TODO: Read a resource, parse the contents and return it
+    #     return []
 
     async def cleanup(self):
         await self._exit_stack.aclose()
@@ -82,7 +83,8 @@ class MCPClient:
 # For testing
 async def main():
     async with MCPClient(
-        # If using Python without UV, update command to 'python' and remove "run" from args.
+        # If using Python without UV, update command to 'python'
+        # and remove "run" from args.
         command="uv",
         args=["run", "mcp_server.py"],
     ) as _client:

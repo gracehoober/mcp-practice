@@ -9,21 +9,21 @@ class Claude:
         self.client = Anthropic()
         self.model = model
 
-    def add_user_message(self, messages: list[MessageParam], message: Message | str | list[Any]) -> None:
+    def add_user_message(
+        self, messages: list[MessageParam], message: Message | str | list[Any]
+    ) -> None:
         user_message = {
             "role": "user",
-            "content": message.content
-            if isinstance(message, Message)
-            else message,
+            "content": message.content if isinstance(message, Message) else message,
         }
         messages.append(cast(MessageParam, user_message))
 
-    def add_assistant_message(self, messages: list[MessageParam], message: Message | str) -> None:
+    def add_assistant_message(
+        self, messages: list[MessageParam], message: Message | str
+    ) -> None:
         assistant_message = {
             "role": "assistant",
-            "content": message.content
-            if isinstance(message, Message)
-            else message,
+            "content": message.content if isinstance(message, Message) else message,
         }
         messages.append(cast(MessageParam, assistant_message))
 

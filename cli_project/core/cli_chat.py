@@ -1,4 +1,4 @@
-from typing import Literal, cast
+from typing import Literal
 
 from anthropic.types import MessageParam
 from mcp.types import Prompt, PromptMessage
@@ -20,20 +20,18 @@ class CliChat(Chat):
         self.doc_client: MCPClient = doc_client
 
     async def list_prompts(self) -> list[Prompt]:
-        return await self.doc_client.list_prompts()
+        return await self.doc_client.list_prompts()  # type: ignore[attr-defined]
 
     async def list_docs_ids(self) -> list[str]:
-        result = await self.doc_client.read_resource("docs://documents")
+        result = await self.doc_client.read_resource("docs://documents")  # type: ignore[attr-defined]
         return result  # type: ignore[no-any-return]
 
     async def get_doc_content(self, doc_id: str) -> str:
-        result = await self.doc_client.read_resource(f"docs://documents/{doc_id}")
+        result = await self.doc_client.read_resource(f"docs://documents/{doc_id}")  # type: ignore[attr-defined]
         return result  # type: ignore[no-any-return]
 
-    async def get_prompt(
-        self, command: str, doc_id: str
-    ) -> list[PromptMessage]:
-        result = await self.doc_client.get_prompt(command, {"doc_id": doc_id})
+    async def get_prompt(self, command: str, doc_id: str) -> list[PromptMessage]:
+        result = await self.doc_client.get_prompt(command, {"doc_id": doc_id})  # type: ignore[attr-defined]
         return result  # type: ignore[no-any-return]
 
     async def _extract_resources(self, query: str) -> str:
@@ -59,9 +57,7 @@ class CliChat(Chat):
         words = query.split()
         command = words[0].replace("/", "")
 
-        messages = await self.doc_client.get_prompt(
-            command, {"doc_id": words[1]}
-        )
+        messages = await self.doc_client.get_prompt(command, {"doc_id": words[1]})  # type: ignore[attr-defined]
 
         self.messages += convert_prompt_messages_to_message_params(messages)
         return True
@@ -96,20 +92,22 @@ class CliChat(Chat):
 def convert_prompt_message_to_message_param(
     prompt_message: "PromptMessage",
 ) -> MessageParam:
-    role: Literal["user", "assistant"] = "user" if prompt_message.role == "user" else "assistant"
+    role: Literal["user", "assistant"] = (
+        "user" if prompt_message.role == "user" else "assistant"
+    )
 
     content = prompt_message.content
 
     # Check if content is a dict-like object with a "type" field
     if isinstance(content, dict) or hasattr(content, "__dict__"):
         content_type = (
-            content.get("type", None)
+            content.get("type", None)  # type: ignore[union-attr]
             if isinstance(content, dict)
             else getattr(content, "type", None)
         )
         if content_type == "text":
             content_text = (
-                content.get("text", "")
+                content.get("text", "")  # type: ignore[union-attr]
                 if isinstance(content, dict)
                 else getattr(content, "text", "")
             )
@@ -142,6 +140,4 @@ def convert_prompt_message_to_message_param(
 def convert_prompt_messages_to_message_params(
     prompt_messages: list[PromptMessage],
 ) -> list[MessageParam]:
-    return [
-        convert_prompt_message_to_message_param(msg) for msg in prompt_messages
-    ]
+    return [convert_prompt_message_to_message_param(msg) for msg in prompt_messages]
