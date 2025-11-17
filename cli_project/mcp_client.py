@@ -2,7 +2,6 @@ import asyncio
 import sys
 from contextlib import AsyncExitStack
 
-# from typing import Any
 from mcp import ClientSession, StdioServerParameters, types
 from mcp.client.stdio import stdio_client
 
@@ -56,17 +55,16 @@ class MCPClient:
 
         return await self.session().call_tool(tool_name, tool_input)
 
-    # async def list_prompts(self) -> list[types.Prompt]:
-    #     # TODO: Return a list of prompts defined by the MCP server
-    #     return []
+    async def list_prompts(self) -> list[types.Prompt]:
+        response = await self.session().list_prompts()
+        return response.prompts
 
-    # async def get_prompt(self, prompt_name, args: dict[str, str]):
-    #     # TODO: Get a particular prompt defined by the MCP server
-    #     return []
+    async def get_prompt(self, prompt_name, args: dict[str, str]):
+        response = await self.session().get_prompt(prompt_name, args)
+        return response.messages
 
     # async def read_resource(self, uri: str) -> Any:
-    #     # TODO: Read a resource, parse the contents and return it
-    #     return []
+    #     return None
 
     async def cleanup(self):
         await self._exit_stack.aclose()

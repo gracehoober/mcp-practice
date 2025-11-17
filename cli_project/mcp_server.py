@@ -1,4 +1,5 @@
 from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.prompts import base
 from pydantic import Field
 
 mcp = FastMCP("DocumentMCP")
@@ -76,7 +77,47 @@ def get_doc(doc_id: str) -> str:
 
 
 # PROMPTS #
-# TODO: Write a prompt to rewrite a doc in markdown format
-# TODO: Write a prompt to summarize a doc
+
+
+@mcp.prompt(
+    name="format", description="Returns the contents of a document in markdown format"
+)
+def format_doc_to_mkdwn(
+    doc_id=Field(description="Id of the document to convert to markdown."),
+) -> list[base.Message]:
+    prompt = f"""
+    Your goal is to reformat a document to be written with markdown syntax.
+    The id of the document you need to reformat is:
+
+    <document_id>
+    {doc_id}
+    </document_id>
+
+    Add in headers, bullet points, tables, etc as necessary.
+    use the "edit_document" tool to edit the document.
+    """
+    return [base.UserMessage(prompt)]
+
+
+@mcp.prompt(
+    name="summarize", description="Provides three keywords the summarize a document."
+)
+def summarize_document(
+    doc_id=Field(description="Id of the document to summarize."),
+) -> list[base.Message]:
+    prompt = f"""
+    Your goal is to summarize a document down to three keywords.
+    the id of the document you need to summarize is:
+
+    <document_id>
+    {doc_id}
+    </document_id>
+
+    Use the "summarize_doc tool to summarize the document.
+
+    """
+    return [base.UserMessage(prompt)]
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
